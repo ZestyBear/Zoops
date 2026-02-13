@@ -1,15 +1,16 @@
+// File: Assets/Zoops/Scripts/Sim/DecisionPolicy.cs
 namespace Zoops.Simulation
 {
     /// <summary>
-    /// Sim-only decision policy.
-    /// Produces intent (desired movement direction) for a specific Zoop.
-    /// No Unity types allowed.
+    /// Sim-only decision policy ("brain").
+    /// Deterministic mapping: Observation -> Intent.
+    /// No Unity types. No direct world mutation.
     /// </summary>
     public interface DecisionPolicy
     {
-        /// <param name="world">Authoritative sim world state.</param>
-        /// <param name="zoop">The zoop being controlled.</param>
+        /// <param name="observation">What the Zoop can sense right now (sim-owned).</param>
         /// <param name="brainDt">Fixed simulated time step for brain updates.</param>
-        void StepBrain(SimulationWorld world, ZoopSim zoop, float brainDt);
+        /// <returns>Desired intent. Physics lane applies it under world rules.</returns>
+        Intent StepBrain(in Observation observation, float brainDt);
     }
 }

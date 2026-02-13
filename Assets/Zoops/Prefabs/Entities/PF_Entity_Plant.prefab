@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 598847571928486487}
   - component: {fileID: 1774839896725205009}
   m_Layer: 0
-  m_Name: PF_Entity_Food
+  m_Name: PF_Entity_Plant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

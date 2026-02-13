@@ -1,0 +1,30 @@
+TO DO 
+
+Questions - Sim Speed Setting and Choices - limit? why. 
+
+UI 
+Side Panel Area:
+
+Nothing Selected:
+Base WorldView UI Panel on Side Panel 
+Room for Tabs at the Top
+- Info Like:
+Sim Time
+Zoop Pop (future capability to display as a graph with history line)
+Plant Pop - same thing?
+Generation # 
+
+If Zoop Selected, show UI Selected Zoop Panel
+We have Template - adjust / redesign so: 
+Room for Tabs at the Top (in line with where the world view ui tabs would be)
+Energy bar (in place)
+Stats & Genes 
+Age
+
+If Plant Selected - Simple UI Panel on left to show:
+Room for Tabs at the Top (in line with where the world view ui tabs would be)
+Plant Stats
+Energy Gain
+Respawn Time
+
+Space reserved for sim speed controls

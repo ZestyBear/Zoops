@@ -1307,8 +1307,8 @@ Camera:
   m_GameObject: {fileID: 1462278544}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.236917, g: 0.236917, b: 0.32614553, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1483,7 +1483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca010311d0c0f71418faab94f5013a3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimulationRunner
-  seed: 12345
+  seed: 0
   config: {fileID: 11400000, guid: 92dae2f546603f2448e7dfd0dda1b20a, type: 2}
   simSpeed: 1
   physicsHz: 30
@@ -1815,9 +1815,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Zoops.View.SimEntityViewSpawner
   runner: {fileID: 1470219052}
   zoopPrefab: {fileID: 5519224392362141900, guid: 79a0a4ea162ee8341a30bee6d28272d6, type: 3}
-  foodPrefab: {fileID: 5817298481451114274, guid: d0f73f4d37d05cc4bbcd5026d14da3c6, type: 3}
+  plantPrefab: {fileID: 5817298481451114274, guid: d0f73f4d37d05cc4bbcd5026d14da3c6, type: 3}
   zoopsBucketName: WorldViews_Zoops
-  foodsBucketName: WorldViews_Foods
+  plantsBucketName: WorldViews_Plants
 --- !u!1 &1818957429
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,10 +1,11 @@
+// File: Assets/Zoops/Scripts/View/PlantView.cs
 using UnityEngine;
 using Zoops.Simulation;
 
 namespace Zoops.View
 {
     [RequireComponent(typeof(SpriteRenderer))]
-    public sealed class FoodView : MonoBehaviour
+    public sealed class PlantView : MonoBehaviour
     {
         [Header("Injected")]
         [SerializeField] private SimulationRunner runner;
@@ -52,16 +53,16 @@ namespace Zoops.View
                 return;
             }
 
-            if (!world.TryGetFood(entityHandle.EntityId, out var food) || food == null)
+            if (!world.TryGetPlant(entityHandle.EntityId, out var plant) || plant == null)
             {
                 _sr.enabled = false;
                 return;
             }
 
-            _sr.enabled = food.IsAlive;
+            _sr.enabled = plant.IsAlive;
 
-            if (food.IsAlive)
-                transform.position = new Vector3(food.X, food.Y, transform.position.z);
+            if (plant.IsAlive)
+                transform.position = new Vector3(plant.X, plant.Y, transform.position.z);
         }
     }
 }

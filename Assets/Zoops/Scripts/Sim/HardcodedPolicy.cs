@@ -1,51 +1,28 @@
-using System;
-
+// File: Assets/Zoops/Scripts/Sim/HardcodedPolicy.cs
 namespace Zoops.Simulation
 {
     /// <summary>
     /// MVP policy:
-    /// - Steer toward nearest alive food (wrap-aware).
-    /// - If no food alive, keep current intent.
-    /// Only writes ZoopSim intent; does not move the Zoop.
+    /// - Steer toward nearest sensed plant (today's food).
+    /// - If no plant sensed, return Intent.None (world may choose to preserve prior intent).
     /// </summary>
     public sealed class HardcodedPolicy : DecisionPolicy
     {
-        public void StepBrain(SimulationWorld world, ZoopSim zoop, float brainDt)
+        public Intent StepBrain(in Observation observation, float brainDt)
         {
-            if (zoop == null || !zoop.IsAlive) return;
+            if (!observation.HasNearestPlant) return Intent.None;
 
-            FoodSim best = null;
-            float bestD2 = float.PositiveInfinity;
+            float dist = observation.PlantDist;
+            if (dist <= 0.000001f) return Intent.None;
 
-            var foods = world.Foods;
-            for (int i = 0; i < foods.Count; i++)
+            // Normalize (dx,dy) to get a direction.
+            float inv = 1f / dist;
+
+            return new Intent
             {
-                var f = foods[i];
-                if (f == null || !f.IsAlive) continue;
-
-                float dx = world.ShortestWrappedDeltaX(zoop.X, f.X);
-                float dy = world.ShortestWrappedDeltaY(zoop.Y, f.Y);
-
-                float d2 = dx * dx + dy * dy;
-                if (d2 < bestD2)
-                {
-                    bestD2 = d2;
-                    best = f;
-                }
-            }
-
-            if (best == null) return;
-
-            float lenSq = bestD2;
-            if (lenSq > 0.0000001f)
-            {
-                float invLen = 1f / (float)Math.Sqrt(lenSq);
-                float dx = world.ShortestWrappedDeltaX(zoop.X, best.X);
-                float dy = world.ShortestWrappedDeltaY(zoop.Y, best.Y);
-
-                zoop.IntentX = dx * invLen;
-                zoop.IntentY = dy * invLen;
-            }
+                MoveX = observation.PlantDx * inv,
+                MoveY = observation.PlantDy * inv
+            };
         }
     }
 }

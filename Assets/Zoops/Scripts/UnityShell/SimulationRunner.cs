@@ -1,4 +1,4 @@
-// File: SimulationRunner.cs
+// File: Assets/Zoops/Scripts/UnityShell/SimulationRunner.cs
 using System;
 using UnityEngine;
 using Zoops.Simulation;
@@ -27,20 +27,9 @@ public class SimulationRunner : MonoBehaviour
     private SimulationWorld _world;
     public SimulationWorld World => _world;
 
-    /// <summary>
-    /// Deterministic sim tick duration (seconds per physics tick).
-    /// UI uses this to convert tick counts to seconds (e.g., age).
-    /// </summary>
     public float SimTickSeconds => physicsHz > 0f ? (1f / physicsHz) : 0f;
 
-    /// <summary>
-    /// View-layer lifecycle signal: fired whenever a new world is built/rebuilt.
-    /// </summary>
     public event Action WorldChanged;
-
-    /// <summary>
-    /// Unity-facing forwarding of sim events (single gateway for observation layers).
-    /// </summary>
     public event Action<SimEvent> SimEventRaised;
 
     private float _physicsAccum;
@@ -64,7 +53,7 @@ public class SimulationRunner : MonoBehaviour
         _physicsAccum += scaledDt;
         _brainAccum += scaledDt;
 
-        // Run brain lane first so physics consumes freshest intent.
+        // Brain lane first so physics consumes freshest intent.
         while (_brainAccum >= brainDt)
         {
             _world.StepBrainTick(brainDt);
@@ -88,33 +77,90 @@ public class SimulationRunner : MonoBehaviour
 
     private void CreateWorld()
     {
-        // Reset accumulators so the first frame after rebuild is deterministic and clean.
         _physicsAccum = 0f;
         _brainAccum = 0f;
 
         if (config == null)
         {
-            Debug.LogError("[Sim] SimulationRunner has no SimulationConfig assigned. Create one (Assets > Create > Zoops > Simulation Config) and assign it.");
+            Debug.LogError("[Sim] SimulationRunner has no WorldConfig assigned. Create one (Assets > Create > Zoops > World Config) and assign it.");
             return;
         }
 
-        // Normalize config values (keep config authoritative, but ensure sane invariants).
         float startE = Mathf.Max(0f, config.zoopStartingEnergy);
         float maxE = Mathf.Max(0f, config.zoopMaxEnergy);
 
-        if (maxE <= 0f) maxE = startE;        // if user left max at 0, default to starting energy
-        if (maxE < startE) maxE = startE;     // ensure max >= start
+        if (maxE <= 0f) maxE = startE;
+        if (maxE < startE) maxE = startE;
+
+        float geneDefaultMoveSpeed = config.geneDefaultMoveSpeed;
+        if (geneDefaultMoveSpeed <= 0f)
+            geneDefaultMoveSpeed = Mathf.Max(0f, config.zoopSpeed);
+
+        // Spread Ecology sanity
+        int plantMin = Mathf.Max(0, config.plantMinCount);
+        int plantMax = Mathf.Max(1, config.plantMaxCount);
+        if (plantMax < plantMin) plantMax = plantMin;
+
+        int initialPlantCount = Mathf.Max(1, config.initialPlantCount);
+        if (initialPlantCount > plantMax) initialPlantCount = plantMax;
+
+        int rescueBatch = Mathf.Max(1, config.plantRescueBatchSize);
 
         var p = new SimulationParams(
+            // energy
             zoopStartingEnergy: startE,
             zoopMaxEnergy: maxE,
             zoopMetabolismPerSecond: Mathf.Max(0f, config.zoopMetabolismPerSecond),
-            foodSpawnX: config.foodSpawnX,
-            foodSpawnY: config.foodSpawnY,
-            foodEnergyGain: Mathf.Max(0f, config.foodEnergyGain),
-            foodRespawnSeconds: Mathf.Max(0f, config.foodRespawnSeconds),
-            zoopSpeed: Mathf.Max(0f, config.zoopSpeed),
-            eatRadius: Mathf.Max(0f, config.eatRadius)
+
+            // plant (edible entity today)
+            plantSpawnX: config.plantSpawnX,
+            plantSpawnY: config.plantSpawnY,
+            plantEnergyGain: Mathf.Max(0f, config.plantEnergyGain),
+            plantRespawnSeconds: Mathf.Max(0f, config.plantRespawnSeconds),
+
+            // plant population dynamics (Spread Ecology)
+            plantMinCount: plantMin,
+            plantMaxCount: plantMax,
+            plantSpreadIntervalSeconds: Mathf.Max(0f, config.plantSpreadIntervalSeconds),
+            plantSpreadChance: Mathf.Clamp01(config.plantSpreadChance),
+            plantSpreadRadius: Mathf.Max(0f, config.plantSpreadRadius),
+            plantRescueIntervalSeconds: Mathf.Max(0f, config.plantRescueIntervalSeconds),
+            plantRescueBatchSize: rescueBatch,
+
+            // plant regrowth dynamics (legacy knobs; logic will migrate in world)
+            plantRegrowRadius: Mathf.Max(0f, config.plantRegrowRadius),
+            plantLongJumpChance: Mathf.Clamp01(config.plantLongJumpChance),
+            plantBoundsInset: Mathf.Max(0f, config.plantBoundsInset),
+
+            // interaction
+            eatRadius: Mathf.Max(0f, config.eatRadius),
+
+            // counts
+            initialZoopCount: Mathf.Max(1, config.initialZoopCount),
+            initialPlantCount: initialPlantCount,
+
+            // default genes
+            geneDefaultMoveSpeed: Mathf.Max(0f, geneDefaultMoveSpeed),
+            geneDefaultVisionRange: Mathf.Max(0f, config.geneDefaultVisionRange),
+            geneDefaultReproThreshold: Mathf.Max(0f, config.geneDefaultReproThreshold),
+
+            // founder variation
+            founderGeneSigmaFraction: Mathf.Max(0f, config.founderGeneSigmaFraction),
+
+            // clamps
+            geneMinMoveSpeed: Mathf.Max(0f, config.geneMinMoveSpeed),
+            geneMaxMoveSpeed: Mathf.Max(0f, config.geneMaxMoveSpeed),
+            geneMinVisionRange: Mathf.Max(0f, config.geneMinVisionRange),
+            geneMaxVisionRange: Mathf.Max(0f, config.geneMaxVisionRange),
+            geneMinReproThreshold: Mathf.Max(0f, config.geneMinReproThreshold),
+            geneMaxReproThreshold: Mathf.Max(0f, config.geneMaxReproThreshold),
+
+            // reproduction
+            reproCooldownSeconds: Mathf.Max(0f, config.reproCooldownSeconds),
+            reproParentEnergyFraction: Mathf.Clamp01(config.reproParentEnergyFraction),
+
+            // mutation
+            mutationSigmaFraction: Mathf.Max(0f, config.mutationSigmaFraction)
         );
 
         _world = new SimulationWorld(

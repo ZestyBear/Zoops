@@ -1,3 +1,4 @@
+// File: Assets/Zoops/Scripts/View/SimEntityViewSpawner.cs
 using System.Collections.Generic;
 using UnityEngine;
 using Zoops.Simulation;
@@ -11,14 +12,14 @@ namespace Zoops.View
 
         [Header("Prefabs")]
         [SerializeField] private GameObject zoopPrefab;
-        [SerializeField] private GameObject foodPrefab;
+        [SerializeField] private GameObject plantPrefab; // represents Plant today
 
         [Header("Hierarchy Buckets")]
         [SerializeField] private string zoopsBucketName = "WorldViews_Zoops";
-        [SerializeField] private string foodsBucketName = "WorldViews_Foods";
+        [SerializeField] private string plantsBucketName = "WorldViews_Plants";
 
         private Transform _zoopsBucket;
-        private Transform _foodsBucket;
+        private Transform _plantsBucket;
 
         private readonly Dictionary<int, GameObject> _viewsById = new Dictionary<int, GameObject>();
 
@@ -50,8 +51,8 @@ namespace Zoops.View
             if (_zoopsBucket == null)
                 _zoopsBucket = FindOrCreateChildBucket(zoopsBucketName);
 
-            if (_foodsBucket == null)
-                _foodsBucket = FindOrCreateChildBucket(foodsBucketName);
+            if (_plantsBucket == null)
+                _plantsBucket = FindOrCreateChildBucket(plantsBucketName);
         }
 
         private Transform FindOrCreateChildBucket(string name)
@@ -75,8 +76,8 @@ namespace Zoops.View
             for (int i = 0; i < world.Zoops.Count; i++)
                 SpawnView(world.Zoops[i].EntityId, EntityKind.Zoop);
 
-            for (int i = 0; i < world.Foods.Count; i++)
-                SpawnView(world.Foods[i].EntityId, EntityKind.Food);
+            for (int i = 0; i < world.Plants.Count; i++)
+                SpawnView(world.Plants[i].EntityId, EntityKind.Plant);
         }
 
         private void HandleSimEvent(SimEvent e)
@@ -110,10 +111,10 @@ namespace Zoops.View
                     instanceName = $"Zoop_{entityId}";
                     break;
 
-                case EntityKind.Food:
-                    prefab = foodPrefab;
-                    parent = _foodsBucket;
-                    instanceName = $"Food_{entityId}";
+                case EntityKind.Plant:
+                    prefab = plantPrefab;
+                    parent = _plantsBucket;
+                    instanceName = $"Plant_{entityId}";
                     break;
 
                 default:
@@ -144,8 +145,8 @@ namespace Zoops.View
                 var zoopView = go.GetComponent<ZoopView>();
                 if (zoopView != null) zoopView.BindRunner(runner);
 
-                var foodView = go.GetComponent<FoodView>();
-                if (foodView != null) foodView.BindRunner(runner);
+                var plantView = go.GetComponent<PlantView>();
+                if (plantView != null) plantView.BindRunner(runner);
             }
 
             _viewsById[entityId] = go;

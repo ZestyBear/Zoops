@@ -16,12 +16,37 @@ MonoBehaviour:
   maxX: 10
   minY: -10
   maxY: 10
-  zoopStartingEnergy: 20
-  zoopMaxEnergy: 20
+  initialZoopCount: 1
+  initialPlantCount: 3
+  zoopStartingEnergy: 10
+  zoopMaxEnergy: 30
   zoopMetabolismPerSecond: 1
-  foodSpawnX: 4
-  foodSpawnY: 2
-  foodEnergyGain: 6
-  foodRespawnSeconds: 3
+  plantSpawnX: 0
+  plantSpawnY: 0
+  plantEnergyGain: 10
+  plantRespawnSeconds: 0.1
+  plantMinCount: 10
+  plantMaxCount: 80
+  plantSpreadIntervalSeconds: 0.1
+  plantSpreadChance: 1
+  plantSpreadRadius: 2.25
+  plantRescueIntervalSeconds: 0.1
+  plantRescueBatchSize: 30
+  plantRegrowRadius: 1
+  plantLongJumpChance: 0.01
+  plantBoundsInset: 1
   zoopSpeed: 2.5
   eatRadius: 0.4
+  geneDefaultMoveSpeed: 2
+  geneDefaultVisionRange: 8
+  geneDefaultReproThreshold: 30
+  founderGeneSigmaFraction: 0.03
+  geneMinMoveSpeed: 0.5
+  geneMaxMoveSpeed: 6
+  geneMinVisionRange: 0.5
+  geneMaxVisionRange: 20
+  geneMinReproThreshold: 1
+  geneMaxReproThreshold: 100
+  reproCooldownSeconds: 2
+  reproParentEnergyFraction: 0.65
+  mutationSigmaFraction: 0.05
